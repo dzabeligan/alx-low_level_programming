@@ -5,7 +5,6 @@
  * @a: integer array
  * @n: number of elements in array
  *
- * Return: Pointer to destination after concatenation
  */
 void reverse_array(int *a, int n)
 {

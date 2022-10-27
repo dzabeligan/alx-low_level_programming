@@ -5,7 +5,7 @@
  * @s1: string
  * @s2: string
  *
- * Return: Pointer to destination after concatenation
+ * Return: Difference between the first unmatched character
  */
 int _strcmp(char *s1, char *s2)
 {

@@ -6,7 +6,7 @@
  * @src: source, string
  * @n: number of characters to copy from source
  *
- * Return: Pointer to destination after concatenation
+ * Return: Pointer to destination after copying
  */
 char *_strncpy(char *dest, char *src, int n)
 {
