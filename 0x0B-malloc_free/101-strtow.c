@@ -1,7 +1,27 @@
 #include "main.h"
 #include <stdlib.h>
 
-#include <stdio.h>
+/**
+ * Word_count - count words in string
+ * @str: string
+ *
+ * Return: number of words in string
+ */
+static int Word_count(char *str)
+{
+	int word_count = 0;
+
+	if (*str++ != ' ')
+		word_count++;
+
+	while (*str)
+	{
+		if (*str != ' ' && *(str - 1) == ' ')
+			word_count++;
+		str++;
+	}
+	return (word_count);
+}
 
 /**
  * Word - get next word in string
@@ -30,28 +50,6 @@ static char *Word(char **str)
 }
 
 /**
- * Word_count - count words in string
- * @str: string
- *
- * Return: number of words in string
- */
-static int Word_count(char *str)
-{
-	int word_count = 0;
-
-	if (*str++ != ' ')
-		word_count++;
-
-	while (*str)
-	{
-		if (*str != ' ' && *(str - 1) == ' ')
-			word_count++;
-		str++;
-	}
-	return (word_count);
-}
-
-/**
  * Free_words - free 2 dimensional array, words
  * @words: pointer to array
  * @height: height of array
@@ -65,34 +63,27 @@ static void Free_words(char **words, int height)
 }
 
 /**
- * strtow - split a string into words
+ * Words - get all words given the word count
  * @str: string
+ * @word_count: number of words in string
  *
  * Return: pointer to array of split words
  */
-char **strtow(char *str)
+static char **Words(char *str, int word_count)
 {
-	char **words = NULL;
-	char *str_copy = str;
-	int word_count = 0, i = 0;
+	int i = 0;
+	char *first_char = str;
+	char **words = (char **)malloc(sizeof(char *) * (word_count + 1));
 
-	if (str_copy == NULL || *str_copy == '\0')
-		return (words);
-
-	word_count = Word_count(str_copy);
-	if (word_count == 0)
-		return (NULL);
-
-	words = (char **)malloc(sizeof(char *) * (word_count + 1));
 	if (words == NULL)
 		return (words);
 
-	while (*str_copy)
+	while (*str)
 	{
-		if ((str_copy == str && *str_copy != ' ')
-			|| (*str_copy != ' ' && *(str_copy - 1) == ' '))
+		if ((first_char == str && *str != ' ')
+			|| (*str != ' ' && *(str - 1) == ' '))
 		{
-			char *word = Word(&str_copy);
+			char *word = Word(&str);
 
 			if (word == NULL)
 			{
@@ -101,8 +92,28 @@ char **strtow(char *str)
 			}
 			words[i++] = word;
 		}
-		str_copy++;
+		str++;
 	}
 	words[i] = NULL;
 	return (words);
+}
+
+/**
+ * strtow - split a string into words
+ * @str: string
+ *
+ * Return: pointer to array of split words
+ */
+char **strtow(char *str)
+{
+	int word_count = 0;
+
+	if (str == NULL || *str == '\0')
+		return (NULL);
+
+	word_count = Word_count(str);
+	if (word_count == 0)
+		return (NULL);
+
+	return (Words(str, word_count));
 }
