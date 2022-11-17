@@ -1,193 +1,144 @@
 #include "main.h"
 #include <stdlib.h>
 #include <stdio.h>
-
-int find_len(char *str);
-char *create_xarray(int size);
-char *iterate_zeroes(char *str);
-int get_prod(char *prod, char *mult, int digit, int zeroes);
-void add_nums(char *final_prod, char *next_prod, int next_len);
+#include <string.h>
 
 /**
- * find_len - Finds the length of a string.
- * @str: The string to be measured.
- *
- * Return: The length of the string.
- */
-int find_len(char *str)
-{
-	int len = 0;
-
-	while (*str++)
-		len++;
-
-	return (len);
-}
-
-/**
- * create_xarray - Creates an array of chars and initializes it with
- *                 the character 'x'. Adds a terminating null byte.
- * @size: The size of the array to be initialized.
- *
- * Description: If there is insufficient space, the
- *              function exits with a status of 98.
- * Return: A pointer to the array.
- */
-char *create_xarray(int size)
-{
-	char *array;
-	int index;
-
-	array = malloc(sizeof(char) * size);
-
-	if (array == NULL)
-		exit(98);
-
-	for (index = 0; index < (size - 1); index++)
-		array[index] = 'x';
-
-	array[index] = '\0';
-
-	return (array);
-}
-
-/**
- * iterate_zeroes - Iterates through a string of numbers containing
- *                  leading zeroes until it hits a non-zero number.
+ * skip_zeroes - Iterates through a string of numbers containing
+ *   leading zeroes until it hits a non-zero number.
  * @str: The string of numbers to be iterate through.
  *
  * Return: A pointer to the next non-zero element.
  */
-char *iterate_zeroes(char *str)
+char *skip_zeroes(char *str)
 {
-	while (*str && *str == '0')
+	while (str && *str == '0')
 		str++;
 
 	return (str);
 }
 
 /**
- * get_digit - Converts a digit character to a corresponding int.
- * @c: The character to be converted.
+ * create_array - Create an array of chars and initialize it with
+ *   the character '0'. Add a terminating null byte
+ *   if there is insufficient space, the function exits with a status of 98
+ * @size: size of the array to be initialized
  *
- * Description: If c is a non-digit, the function
- *              exits with a status of 98.
- * Return: The converted int.
+ * Return: A pointer to the array.
  */
-int get_digit(char c)
+char *create_array(int size)
 {
-	int digit = c - '0';
+	char *array;
+	int i;
 
-	if (digit < 0 || digit > 9)
-		return (-1);
+	array = (char *)malloc(sizeof(char) * size);
+	if (array == NULL)
+		return (NULL);
 
-	return (digit);
+	for (i = 0; i < (size - 1); i++)
+		array[i] = '0';
+
+	array[i] = '\0';
+
+	return (array);
 }
 
 /**
- * get_prod - Multiplies a string of numbers by a single digit.
- * @prod: The buffer to store the result.
+ * get_prod - Multiply a string of numbers by a single digit.
+ * @result_buffer: The buffer to store the result.
  * @mult: The string of numbers.
  * @digit: The single digit.
- * @zeroes: The necessary number of leading zeroes.
- *
- * Description: If mult contains a non-digit, the function
- *              exits with a status value of 98.
+ * @pad_right: The necessary number of leading zeroes.
  *
  * Return: 0 if successful, -1 otherwise
  */
-int get_prod(char *prod, char *mult, int digit, int zeroes)
+int get_prod(char *result_buffer, char *mult, int digit, int pad_right)
 {
-	int mult_len, num, tens = 0;
+	int len, carry = 0;
 
-	mult_len = find_len(mult) - 1;
-	mult += mult_len;
+	len = strlen(mult);
+	mult += len - 1;
 
-	while (*prod)
+	while (pad_right--)
 	{
-		*prod = 'x';
-		prod++;
+		*result_buffer = '0';
+		result_buffer--;
 	}
 
-	prod--;
-
-	while (zeroes--)
+	for (; len > 0; len--, mult--, result_buffer--)
 	{
-		*prod = '0';
-		prod--;
-	}
+		int num = 0;
 
-	for (; mult_len >= 0; mult_len--, mult--, prod--)
-	{
 		if (*mult < '0' || *mult > '9')
 			return (-1);
 
-		num = (*mult - '0') * digit;
-		num += tens;
-		*prod = (num % 10) + '0';
-		tens = num / 10;
+		num = (*mult - '0') * digit + carry;
+		*result_buffer = (num % 10) + '0';
+		carry = num / 10;
 	}
+	if (carry)
+		*result_buffer = carry + '0';
 
-	if (tens)
-		*prod = (tens % 10) + '0';
 	return (0);
 }
 
 /**
- * add_nums - Adds the numbers stored in two strings.
- * @final_prod: The buffer storing the running final product.
- * @next_prod: The next product to be added.
- * @next_len: The length of next_prod.
+ * add_nums - Add the numbers stored in two strings.
+ * @result_buffer: The buffer storing the running final product.
+ * @step_buffer: The next product to be added.
+ * @size: size of buffer
+ *
  */
-void add_nums(char *final_prod, char *next_prod, int next_len)
+void add_nums(char *result_buffer, const char *step_buffer, int size)
 {
-	int num, tens = 0;
+	int carry = 0;
 
-	while (*(final_prod + 1))
-		final_prod++;
-
-	while (*(next_prod + 1))
-		next_prod++;
-
-	for (; *final_prod != 'x'; final_prod--)
+	while (size--)
 	{
-		num = (*final_prod - '0') + (*next_prod - '0');
-		num += tens;
-		*final_prod = (num % 10) + '0';
-		tens = num / 10;
+		int sum = 0;
+		int digit1 = result_buffer[size] - '0';
+		int digit2 = step_buffer[size] - '0';
 
-		next_prod--;
-		next_len--;
+		sum = digit1 + digit2 + carry;
+		carry = sum / 10;
+		*(result_buffer + size) = ((sum) % 10) + '0';
 	}
-
-	for (; next_len >= 0 && *next_prod != 'x'; next_len--)
-	{
-		num = (*next_prod - '0');
-		num += tens;
-		*final_prod = (num % 10) + '0';
-		tens = num / 10;
-
-		final_prod--;
-		next_prod--;
-	}
-
-	if (tens)
-		*final_prod = (tens % 10) + '0';
+	if (carry)
+		*(result_buffer + size) = carry + '0';
 }
 
 /**
- * main - Multiplies two positive numbers.
+ * handle_exit - exit helper
+ * @step_buffer: step buffer
+ * @result_buffer: result buffer
+ * @ret: status
+ *
+ */
+void handle_exit(char *step_buffer, char *result_buffer, int ret)
+{
+	if (step_buffer)
+		free(step_buffer);
+	if (result_buffer)
+		free(result_buffer);
+	if (ret)
+	{
+		printf("Error\n");
+		exit(98);
+	}
+}
+
+/**
+ * main - Multiply two positive numbers
  * @argv: The number of arguments passed to the program.
  * @argc: An array of pointers to the arguments.
  *
- * Description: If the number of arguments is incorrect or one number
- *              contains non-digits, the function exits with a status of 98.
- * Return: Always 0.
+ * Return: Return 0. if the number of arguments is incorrect or one number
+ *   contains non-digits, the function exits with a status of 98.
  */
 int main(int argc, char *argv[])
 {
-	char *final_prod, *next_prod;
-	int size, index, digit, ret = 1, zeroes = 0;
+	char *result_buffer = NULL, *step_buffer = NULL;
+	int size, i, digit, ret = 1, pad_right = 0;
 
 	if (argc != 3)
 	{
@@ -195,45 +146,35 @@ int main(int argc, char *argv[])
 		exit(98);
 	}
 
-	if (*(argv[1]) == '0')
-		argv[1] = iterate_zeroes(argv[1]);
-	if (*(argv[2]) == '0')
-		argv[2] = iterate_zeroes(argv[2]);
+	argv[1] = skip_zeroes(argv[1]);
+	argv[2] = skip_zeroes(argv[2]);
 	if (*(argv[1]) == '\0' || *(argv[2]) == '\0')
 	{
 		printf("0\n");
 		return (0);
 	}
 
-	size = find_len(argv[1]) + find_len(argv[2]);
-	final_prod = create_xarray(size + 1);
-	next_prod = create_xarray(size + 1);
+	size = strlen(argv[1]) + strlen(argv[2]);
+	result_buffer = create_array(size + 1);
+	if (result_buffer == NULL)
+		goto exit;
+	step_buffer = create_array(size + 1);
+	if (step_buffer == NULL)
+		goto exit;
 
-	for (index = find_len(argv[2]) - 1; index >= 0; index--)
+	for (i = strlen(argv[2]) - 1; i >= 0; i--)
 	{
-		digit = get_digit(*(argv[2] + index));
-		if (digit < 0)
+		if (*(argv[2] + i) >= '0' && *(argv[2] + i) <= '9')
+			digit = *(argv[2] + i) - '0';
+		else
 			goto exit;
-		if (get_prod(next_prod, argv[1], digit, zeroes++))
+		if (get_prod(step_buffer + size - 1, argv[1], digit, pad_right++))
 			goto exit;
-		add_nums(final_prod, next_prod, size - 1);
+		add_nums(result_buffer, step_buffer, size);
 	}
-	for (index = 0; final_prod[index]; index++)
-	{
-		if (final_prod[index] != 'x')
-			putchar(final_prod[index]);
-	}
-	putchar('\n');
+	printf("%s\n", skip_zeroes(result_buffer));
 	ret = 0;
 exit:
-	if (next_prod)
-		free(next_prod);
-	if (final_prod)
-		free(final_prod);
-	if (ret)
-	{
-		printf("Error\n");
-		exit(98);
-	}
+	handle_exit(step_buffer, result_buffer, ret);
 	return (0);
 }
