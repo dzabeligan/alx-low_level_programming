@@ -44,7 +44,7 @@ char *create_array(int size)
 }
 
 /**
- * get_prod - Multiply a string of numbers by a single digit.
+ * multiply_helper - Multiply a string of numbers by a single digit.
  * @result_buffer: The buffer to store the result.
  * @mult: The string of numbers.
  * @digit: The single digit.
@@ -52,7 +52,7 @@ char *create_array(int size)
  *
  * Return: 0 if successful, -1 otherwise
  */
-int get_prod(char *result_buffer, char *mult, int digit, int pad_right)
+int multiply_helper(char *result_buffer, char *mult, int digit, int pad_right)
 {
 	int len, carry = 0;
 
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
 			digit = *(argv[2] + i) - '0';
 		else
 			goto exit;
-		if (get_prod(step_buffer + size - 1, argv[1], digit, pad_right++))
+		if (multiply_helper(step_buffer + size - 1, argv[1], digit, pad_right++))
 			goto exit;
 		add_nums(result_buffer, step_buffer, size);
 	}
