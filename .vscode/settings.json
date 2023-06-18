@@ -1,0 +1,5 @@
+{
+  "c-cpp-flylint.cppcheck.suppressions": ["cstyleCast"],
+  "editor.formatOnSave": true,
+  "C_Cpp.clang_format_fallbackStyle": "{ BasedOnStyle: WebKit, UseTab: Always, TabWidth: 4, AllowShortIfStatementsOnASingleLine: false, BreakBeforeBraces: Allman, DerivePointerAlignment: false, PointerAlignment: Right, ColumnLimit: 79 }"
+}
