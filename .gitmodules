@@ -1,3 +1,9 @@
 [submodule "simple_shell"]
 	path = simple_shell
 	url = git@github.com:Jerry-kjk/simple_shell.git
+[submodule "monty"]
+	path = monty
+	url = git@github.com:dzabeligan/monty.git
+[submodule "printf"]
+	path = printf
+	url = git@github.com:dzabeligan/printf.git
