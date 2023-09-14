@@ -7,3 +7,6 @@
 [submodule "printf"]
 	path = printf
 	url = git@github.com:dzabeligan/printf.git
+[submodule "binary_trees"]
+	path = binary_trees
+	url = git@github.com:dzabeligan/binary_trees.git
